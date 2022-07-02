@@ -42,9 +42,6 @@ public class KnowItAll implements Listener {
     public Biome getBiome(NamespacedKey name) {
         return biomes2.get(name);
     }
-    public Object getNMSBiome(NamespacedKey name) {
-        return biomes.get(name);
-    }
     public CustomBiome getCustomBiome(NamespacedKey name) {
         Map<String, CustomBiome> map = customBiomes.get(name.getNamespace());
         if(map != null) {
@@ -92,9 +89,7 @@ public class KnowItAll implements Listener {
                 customBiomes2.remove(b);
                 biomes.remove(b.getName());
                 biomes2.remove(b.getName());
-                chunks.get(b.getName()).forEach((c) -> {
-                    Biomizer.INSTANCE.getNMS().sendChunkUpdate(c);
-                });
+                chunks.get(b.getName()).forEach(Biomizer.INSTANCE.getNMS()::sendChunkUpdate);
                 return;
             }
         }

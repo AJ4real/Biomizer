@@ -25,9 +25,6 @@ public class Biomizer {
         me.aj4real.simplepackets.Dist.init(plugin, "biomizer");
         this.knowItAll = new KnowItAll();
         this.knowItAll.onEnable(plugin);
-        this.knowItAll.getBiomes().forEach((b) -> {
-            if(b.getTemperatureModifier().isPresent()) System.out.println(b.getTemperatureModifier().get());
-        });
     }
 
     public void onDisable(Plugin plugin) {

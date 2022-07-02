@@ -142,7 +142,6 @@ public class CommandBiome extends AbstractCommand {
             if (e.hasObject("grass_color")) {
                 Color value = ((ColorTag) e.getObjectTag("grass_color")).getColor();
                 biome.setGrassColor(value.getRed(), value.getGreen(), value.getBlue());
-                System.out.println("aaaaaaaaa");
             }
             if (e.hasObject("sky_color")) {
                 Color value = ((ColorTag) e.getObjectTag("sky_color")).getColor();
