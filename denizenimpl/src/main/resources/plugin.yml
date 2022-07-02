@@ -1,0 +1,8 @@
+
+name: DenizenBiomizer
+main: me.aj4real.biomizer.denizen.DenizenImpl
+version: 1.0
+author: AJ_4real
+api-version: 1.18
+depend:
+  - Denizen
