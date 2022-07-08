@@ -7,11 +7,11 @@ package me.aj4real.biomizer.nms.v1_18_R1;
 import io.netty.buffer.Unpooled;
 import me.aj4real.biomizer.Biomizer;
 import me.aj4real.biomizer.NMS;
-import me.aj4real.dataplus.reflection.ClassAccessor;
-import me.aj4real.dataplus.reflection.FieldAccessor;
 import me.aj4real.dataplus.api.ChunkDataPacketEditor;
 import me.aj4real.dataplus.api.login.LoginPacketEditor;
 import me.aj4real.dataplus.api.nbt.NBTCompoundTag;
+import me.aj4real.dataplus.reflection.ClassAccessor;
+import me.aj4real.dataplus.reflection.FieldAccessor;
 import me.aj4real.simplepackets.Client;
 import me.aj4real.simplepackets.Packets;
 import net.minecraft.core.MappedRegistry;
@@ -23,7 +23,6 @@ import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.network.protocol.game.ClientboundLoginPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.dedicated.DedicatedServer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
@@ -41,8 +40,8 @@ import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class NMSImpl implements NMS {
@@ -54,23 +53,23 @@ public class NMSImpl implements NMS {
     MappedRegistry<Biome> BIOMES = (MappedRegistry<Biome>) this.server.registryAccess().registry(Registry.BIOME_REGISTRY).get();
     public void onEnable(Plugin plugin) {
         frozen.set(BIOMES, false);
-        Packets.addHandler(ClientboundLoginPacket.class, (c, p) -> patchLoginPacket(c,p));
-        Packets.addHandler(ClientboundLevelChunkWithLightPacket.class, (c, p) -> patchChunkPacket(c,p));
+        Packets.addHandler(ClientboundLoginPacket.class, this::patchLoginPacket);
+        Packets.addHandler(ClientboundLevelChunkWithLightPacket.class, this::patchChunkPacket);
     }
 
     public ClientboundLevelChunkWithLightPacket patchChunkPacket(Client c, ClientboundLevelChunkWithLightPacket p) {
         if(c.getPlayer() == null) {
             return p;
         }
-        try {
+        Chunk chunk = c.getPlayer().getWorld().getChunkAt(p.getX(), p.getZ());
+        Biome biome = (Biome) Biomizer.INSTANCE.getKnowItAll().should(c.getPlayer(), chunk);
+        if(biome == null) return p;
+        else try {
             ChunkDataPacketEditor editor = ChunkDataPacketEditor.newInstance(c.getPlayer().getWorld(), p);
-            Biome biome = (Biome) Biomizer.INSTANCE.getKnowItAll().should(c.getPlayer(), editor.getChunk());
-            if(biome != null) {
-                editor.setAllNMSBiome(biome);
-            }
+            editor.setAllNMSBiome(biome);
             return (ClientboundLevelChunkWithLightPacket) editor.build();
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            Biomizer.INSTANCE.getPlugin().getLogger().log(Level.WARNING, "Failed to patch chunk data packet!", e);
         }
         return p;
     }
@@ -80,6 +79,7 @@ public class NMSImpl implements NMS {
         buf.writeWithCodec(RegistryAccess.RegistryHolder.NETWORK_CODEC, p.registryHolder());
         NBTCompoundTag nbt = (NBTCompoundTag) Biomizer.INSTANCE.getDataPlus().fromNMS(buf.readNbt());
         LoginPacketEditor editor = new LoginPacketEditor(nbt);
+        Biomizer.INSTANCE.getKnowItAll().getCustomBiomes().forEach(editor::addBiome);
         c.waitForPlayer((pl) -> Biomizer.INSTANCE.getKnowItAll().add((Player) pl, editor.getBiomes()
                 .stream()
                 .map(me.aj4real.dataplus.api.login.Biome::getName)

@@ -21,18 +21,30 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class KnowItAll implements Listener {
-    public static NamespacedKey storage = NamespacedKey.fromString("me.aj4real.biomizer:biome");
-    private Map<Player, Set<NamespacedKey>> players = new HashMap<>();
-    private Map<NamespacedKey, Object> biomes = new HashMap<>();
-    private Map<NamespacedKey, Biome> biomes2 = new HashMap<>();
-    private Map<String, Map<String, CustomBiome>> customBiomes = new HashMap<>();
-    private Set<CustomBiome> customBiomes2 = new HashSet<>();
-    private Map<NamespacedKey, Set<Chunk>> chunks = new HashMap<>();
+    public static final NamespacedKey storage = NamespacedKey.fromString("me.aj4real.biomizer:biome");
+    private static Function<Chunk, NamespacedKey> provider = (c) -> {
+        if(c.getPersistentDataContainer().has(storage, PersistentDataType.STRING)) {
+            String data = c.getPersistentDataContainer().get(storage, PersistentDataType.STRING);
+            return NamespacedKey.fromString(data);
+        }
+        return null;
+    };
+    private final Map<Player, Set<NamespacedKey>> players = new HashMap<>();
+    private final Map<NamespacedKey, Object> biomes = new HashMap<>();
+    private final Map<NamespacedKey, Biome> biomes2 = new HashMap<>();
+    private final Map<String, Map<String, CustomBiome>> customBiomes = new HashMap<>();
+    private final Set<CustomBiome> customBiomes2 = new HashSet<>();
+    private final Map<NamespacedKey, Set<Chunk>> chunks = new HashMap<>();
     public void onEnable(Plugin plugin) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
         reloadBiomes();
+    }
+    public static void setProvider(Function<Chunk, NamespacedKey> provider) {
+        KnowItAll.provider = provider;
     }
     public void reloadBiomes() {
         Biomizer.INSTANCE.getDataPlus().getDefaultLoginCodec();
@@ -50,18 +62,15 @@ public class KnowItAll implements Listener {
         return null;
     }
     public Object should(Player player, Chunk chunk) {
-        if(chunk.getPersistentDataContainer().has(storage, PersistentDataType.STRING)) {
-            String data = chunk.getPersistentDataContainer().get(storage, PersistentDataType.STRING);
-            NamespacedKey key = NamespacedKey.fromString(data);
-            if(players.get(player).contains(key)) return biomes.get(key);
-        }
+        NamespacedKey key = provider.apply(chunk);
+        if(players.get(player).contains(key)) return biomes.get(key);
         return null;
     }
 
     public void add(Player player, Set<NamespacedKey> knownBiomes) {
         players.put(player, knownBiomes);
     }
-    public void add(NamespacedKey name, CustomBiome biome) {
+    public void newBiome(NamespacedKey name, CustomBiome biome) {
         if (!biomes.containsKey(name)) {
             Object nmsBiome = Biomizer.INSTANCE.getNMS().newBiome(name.toString(), biome.getExtended());
             biomes.put(name, nmsBiome);
@@ -89,7 +98,7 @@ public class KnowItAll implements Listener {
                 customBiomes2.remove(b);
                 biomes.remove(b.getName());
                 biomes2.remove(b.getName());
-                chunks.get(b.getName()).forEach(Biomizer.INSTANCE.getNMS()::sendChunkUpdate);
+                if(chunks.containsKey(b.getName())) chunks.get(b.getName()).forEach(Biomizer.INSTANCE.getNMS()::sendChunkUpdate);
                 return;
             }
         }

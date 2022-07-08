@@ -135,7 +135,7 @@ public class CommandBiome extends AbstractCommand {
             if (action == Action.CREATE) {
                 org.bukkit.block.Biome extended = (org.bukkit.block.Biome) e.getObject("extends");
                 biome = new CustomBiome(key, extended);
-                Biomizer.INSTANCE.getKnowItAll().add(key, biome);
+                Biomizer.INSTANCE.getKnowItAll().newBiome(key, biome);
             } else {
                 biome = Biomizer.INSTANCE.getKnowItAll().getCustomBiome((NamespacedKey) e.getObject("id"));
             }

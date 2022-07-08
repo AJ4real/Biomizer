@@ -53,22 +53,5 @@
 
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
-        <resources>
-            <resource>
-                <filtering>false</filtering>
-                <directory>../dist/src/main/resources</directory>
-                <includes>
-                    <include>*.mid</include>
-                </includes>
-            </resource>
-            <resource>
-                <filtering>true</filtering>
-                <directory>../dist/src/main/resources</directory>
-                <includes>
-                    <include>*.yml</include>
-                    <include>*.dsc</include>
-                </includes>
-            </resource>
-        </resources>
     </build>
 </project>

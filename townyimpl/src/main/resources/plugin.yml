@@ -1,0 +1,8 @@
+
+name: TownyBiomes
+main: me.aj4real.biomizer.towny.TownyImpl
+version: 1.0
+author: AJ_4real
+api-version: 1.18
+depend:
+  - Towny

@@ -22,6 +22,7 @@
         <module>paper</module>
         <module>dist</module>
         <module>denizenimpl</module>
+        <module>townyimpl</module>
     </modules>
 
     <build>

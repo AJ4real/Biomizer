@@ -21,18 +21,23 @@ public class CustomBiome extends Biome {
                 extended.getFogColor(),
                 extended.getWaterFogColor()
         );
-        setId(extended.getId());
-        setAmbientSound(extended.getAmbientSound().orElse(null));
-        setCategory(extended.getCategory().orElse(null));
-        setTemperatureModifier(extended.getTemperatureModifier().orElse(null));
-        setParticle(extended.getParticle().orElse(null));
-        setGrassColorModifier(extended.getGrassColorModifier().orElse(null));
-        setSound(extended.getSound().orElse(null));
-        if(extended.getTickDelay().isPresent()) setTickDelay(extended.getTickDelay().get());
-        if(extended.getOffset().isPresent()) setOffset(extended.getOffset().get());
-        if(extended.getGrassColor().isPresent()) setGrassColor(extended.getGrassColor().get());
-        if(extended.getFoliageColor().isPresent()) setFoliageColor(extended.getFoliageColor().get());
-        if(extended.getBlockSearchExtent().isPresent()) this.setBlockSearchExtent(extended.getBlockSearchExtent().get());
+        this.setId(extended.getId());
+        this.setAmbientSound(extended.getAmbientSound().orElse(null));
+        this.setCategory(extended.getCategory().orElse(null));
+        this.setTemperatureModifier(extended.getTemperatureModifier().orElse(null));
+        this.setParticle(extended.getParticle().orElse(null));
+        this.setGrassColorModifier(extended.getGrassColorModifier().orElse(null));
+        this.setSound(extended.getSound().orElse(null));
+        if(extended.getTickDelay().isPresent())
+            this.setTickDelay(extended.getTickDelay().get());
+        if(extended.getOffset().isPresent())
+            this.setOffset(extended.getOffset().get());
+        if(extended.getGrassColor().isPresent())
+            this.setGrassColor(extended.getGrassColor().get());
+        if(extended.getFoliageColor().isPresent())
+            this.setFoliageColor(extended.getFoliageColor().get());
+        if(extended.getBlockSearchExtent().isPresent())
+            this.setBlockSearchExtent(extended.getBlockSearchExtent().get());
     }
     public CustomBiome(NamespacedKey name, org.bukkit.block.Biome extended) {
         this(name, Biomizer.INSTANCE.getKnowItAll().getBiome(extended.getKey()));

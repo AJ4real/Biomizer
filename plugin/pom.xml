@@ -33,7 +33,7 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>me.aj4real.justanothernbtapi</groupId>
+            <groupId>me.aj4real.dataplus</groupId>
             <artifactId>dist</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>

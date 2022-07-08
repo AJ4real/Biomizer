@@ -3,13 +3,19 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>me.aj4real.biomizer</groupId>
         <artifactId>parent</artifactId>
+        <groupId>me.aj4real.biomizer</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>denizenimpl</artifactId>
+    <artifactId>townyimpl</artifactId>
+    <repositories>
+        <repository>
+            <id>glaremasters repo</id>
+            <url>https://repo.glaremasters.me/repository/towny/</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -26,9 +32,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.denizenscript</groupId>
-            <artifactId>denizen</artifactId>
-            <version>1.2.4-SNAPSHOT</version>
+            <groupId>com.palmergames.bukkit.towny</groupId>
+            <artifactId>towny</artifactId>
+            <version>0.98.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -98,7 +104,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <finalName>denizen-biomizer</finalName>
+                    <finalName>towny-biomizer</finalName>
                     <outputDirectory>../target</outputDirectory>
                 </configuration>
             </plugin>

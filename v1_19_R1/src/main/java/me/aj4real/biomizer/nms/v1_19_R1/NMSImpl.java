@@ -23,6 +23,7 @@ import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.network.protocol.game.ClientboundLoginPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.dedicated.DedicatedServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
@@ -30,18 +31,20 @@ import net.minecraft.world.level.biome.MobSpawnSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_19_R1.CraftChunk;
 import org.bukkit.craftbukkit.v1_19_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_19_R1.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_19_R1.util.CraftNamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class NMSImpl implements NMS {
@@ -58,19 +61,28 @@ public class NMSImpl implements NMS {
 
     public ClientboundLevelChunkWithLightPacket patchChunkPacket(Client c, ClientboundLevelChunkWithLightPacket p) {
         if(c.getPlayer() == null) {
+            System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+            c.waitForPlayer((pl) -> {
+                ServerLevel world = ((CraftWorld) c.getPlayer().getWorld()).getHandle();
+                ((CraftPlayer)c.getPlayer()).getHandle().connection.connection.send(new ClientboundLevelChunkWithLightPacket(
+                        world.getChunk(p.getX(), p.getZ()),
+                        world.getLightEngine(),
+                        null, null, true
+                ));
+            });
             return p;
         }
-        try {
+        Chunk chunk = c.getPlayer().getWorld().getChunkAt(p.getX(), p.getZ());
+        Biome biome = (Biome) Biomizer.INSTANCE.getKnowItAll().should(c.getPlayer(), chunk);
+        if(biome == null) return p;
+        else try {
             ChunkDataPacketEditor editor = ChunkDataPacketEditor.newInstance(c.getPlayer().getWorld(), p);
-            Biome biome = (Biome) Biomizer.INSTANCE.getKnowItAll().should(c.getPlayer(), editor.getChunk());
-            if(biome != null) {
-                editor.setAllNMSBiome(biome);
-            }
+            editor.setAllNMSBiome(biome);
             return (ClientboundLevelChunkWithLightPacket) editor.build();
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            Biomizer.INSTANCE.getPlugin().getLogger().log(Level.WARNING, "Failed to patch chunk data packet!", e);
+            return p;
         }
-        return p;
     }
 
     public ClientboundLoginPacket patchLoginPacket(Client c, ClientboundLoginPacket p) {
@@ -78,7 +90,7 @@ public class NMSImpl implements NMS {
         buf.writeWithCodec(RegistryAccess.NETWORK_CODEC, p.registryHolder());
         NBTCompoundTag nbt = (NBTCompoundTag) Biomizer.INSTANCE.getDataPlus().fromNMS(buf.readNbt());
         LoginPacketEditor editor = new LoginPacketEditor(nbt);
-        Biomizer.INSTANCE.getKnowItAll().getCustomBiomes().forEach((b) -> editor.addBiome(b));
+        Biomizer.INSTANCE.getKnowItAll().getCustomBiomes().forEach(editor::addBiome);
         c.waitForPlayer((pl) -> Biomizer.INSTANCE.getKnowItAll().add((Player) pl, editor.getBiomes()
                 .stream()
                 .filter((b) -> Biomizer.INSTANCE.getKnowItAll().getCustomBiome(b.getName()) != null)
@@ -112,17 +124,12 @@ public class NMSImpl implements NMS {
         if(extended == org.bukkit.block.Biome.CUSTOM) throw new UnsupportedOperationException("A custom biome cannot extend org.bukkit.block.Biome.CUSTOM");
         Biome after = CraftBlock.biomeToBiomeBase(BIOMES, extended).value();
         Biome newBiome = new Biome.BiomeBuilder()
+                .generationSettings(BiomeGenerationSettings.EMPTY)
                 .downfall(after.getDownfall())
                 .temperature(after.getBaseTemperature())
-                .generationSettings(BiomeGenerationSettings.EMPTY)
-                .mobSpawnSettings(MobSpawnSettings.EMPTY)
+                .mobSpawnSettings(after.getMobSettings())
                 .precipitation(after.getPrecipitation())
-                .specialEffects(new BiomeSpecialEffects.Builder()
-                        .waterColor(after.getWaterColor())
-                        .waterFogColor(after.getWaterFogColor())
-                        .skyColor(after.getSkyColor())
-                        .fogColor(after.getFogColor())
-                        .build())
+                .specialEffects(after.getSpecialEffects())
                 .build();
         Registry.register(BIOMES, namespace, newBiome);
         return newBiome;
