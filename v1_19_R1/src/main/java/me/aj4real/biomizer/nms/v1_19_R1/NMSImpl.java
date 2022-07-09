@@ -61,10 +61,9 @@ public class NMSImpl implements NMS {
 
     public ClientboundLevelChunkWithLightPacket patchChunkPacket(Client c, ClientboundLevelChunkWithLightPacket p) {
         if(c.getPlayer() == null) {
-            System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
             c.waitForPlayer((pl) -> {
-                ServerLevel world = ((CraftWorld) c.getPlayer().getWorld()).getHandle();
-                ((CraftPlayer)c.getPlayer()).getHandle().connection.connection.send(new ClientboundLevelChunkWithLightPacket(
+                ServerLevel world = ((CraftWorld) ((Player)pl).getWorld()).getHandle();
+                ((CraftPlayer)pl).getHandle().connection.connection.send(new ClientboundLevelChunkWithLightPacket(
                         world.getChunk(p.getX(), p.getZ()),
                         world.getLightEngine(),
                         null, null, true
@@ -72,6 +71,7 @@ public class NMSImpl implements NMS {
             });
             return p;
         }
+
         Chunk chunk = c.getPlayer().getWorld().getChunkAt(p.getX(), p.getZ());
         Biome biome = (Biome) Biomizer.INSTANCE.getKnowItAll().should(c.getPlayer(), chunk);
         if(biome == null) return p;

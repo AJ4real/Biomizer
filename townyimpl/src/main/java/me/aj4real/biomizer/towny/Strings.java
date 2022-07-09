@@ -13,7 +13,7 @@ public class Strings {
     public static String SUCCESS = COLOR_SUCCESS + "Success!";
     public static String RELOG_FOR_CHANGES = COLOR_WARNING + "To view any visual changes, you are required to reconnect to the server.";
     public static String PLAYER_ONLY = COLOR_FAIL + "Only players can execute this command.";
-    public static String MAYOR_ONLY = COLOR_FAIL + "Only the mayor can change biome properties of a town.";
+    public static String NO_PERMISSION = COLOR_FAIL + "You do not have permission to change biome properties.";
     public static String NOT_ENOUGH_ARGUMENTS = COLOR_FAIL + "Not enough arguments.";
     public static String NOT_A_VALID_NUMBER = COLOR_FAIL + "That is not a valid number.";
     public static String NOT_A_VALID_OPTION = COLOR_FAIL + "Not a valid option.";

@@ -6,7 +6,10 @@ package me.aj4real.biomizer;
 
 import me.aj4real.biomizer.api.CustomBiome;
 import me.aj4real.dataplus.api.login.Biome;
+import me.aj4real.dataplus.api.login.Dimension;
 import me.aj4real.dataplus.api.login.LoginPacketEditor;
+import me.aj4real.dataplus.api.nbt.NBTCompoundTag;
+import me.aj4real.dataplus.api.nbt.NBTTag;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.NamespacedKey;
