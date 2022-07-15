@@ -36,6 +36,7 @@ public class TownyImpl extends JavaPlugin implements Listener {
     Biomizer biomizer = null;
     private boolean starting = true;
     public static final Map<Town, CustomBiome> biomes = new HashMap<>();
+    private AddonCommand cmd = null;
     public void onLoad() {
         dist = new Dist();
         dist.onLoad(this);
@@ -59,6 +60,7 @@ public class TownyImpl extends JavaPlugin implements Listener {
     }
     public void onDisable() {
         dist.onDisable(this);
+        if(this.cmd != null) TownyCommandAddonAPI.removeSubCommand(this.cmd);
     }
     @EventHandler
     public void e(NewTownEvent e) {
@@ -90,7 +92,7 @@ public class TownyImpl extends JavaPlugin implements Listener {
                     biomizer.getNMS().sendChunkUpdate(tb.getWorldCoord().getBukkitWorld().getChunkAt(tb.getX(), tb.getZ()));
                 });
             update(town);
-        } catch(Exception e) {
+        } catch(IllegalArgumentException e) {
             getLogger().log(Level.SEVERE, "Town " + town.getName() + " cannot be converted to valid namespace key!", e);
         }
     }
@@ -136,7 +138,7 @@ public class TownyImpl extends JavaPlugin implements Listener {
             StringDataField v = (StringDataField) town.getMetadata("biome.precipitation");
             biome.setPrecipitation(v.getValue().toLowerCase());
         } else {
-            biome.setPrecipitation(null);
+            biome.setPrecipitation("NONE");
         }
         if (town.hasMeta("biome.particle")) {
             StringDataField v = (StringDataField) town.getMetadata("biome.particle");
