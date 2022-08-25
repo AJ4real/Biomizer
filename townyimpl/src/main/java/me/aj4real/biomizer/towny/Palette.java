@@ -4,6 +4,7 @@
 
 package me.aj4real.biomizer.towny;
 
+import com.palmergames.bukkit.util.ChatTools;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -17,13 +18,11 @@ import java.util.*;
 import java.util.List;
 
 public class Palette {
-    private static BufferedImage image;
-    private static Map<String, List<BaseComponent[]>> cache = new HashMap<>();
-    private static boolean init = false;
-    public static void init() {
-        if(init) return;
+    private static final BufferedImage image;
+    private static final Map<String, List<BaseComponent[]>> cache = new HashMap<>();
+    static {
         Color[] colors = new Color[] { Color.RED, Color.MAGENTA, Color.BLUE, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.RED };
-        image = new BufferedImage(1500, 500, BufferedImage.TYPE_INT_RGB);
+        image = new BufferedImage(1600, 500, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();
         float[] positions = new float[colors.length];
         for (int i = 0; i < positions.length; i++) {
@@ -31,12 +30,12 @@ public class Palette {
         }
         LinearGradientPaint linearGradient = new LinearGradientPaint(0, 0, image.getWidth(), 0, positions, colors);
         g.setPaint(linearGradient);
-        g.fillRect(0, 0, 1500, 500);
-        BufferedImage image2 = new BufferedImage(1500, 500, BufferedImage.TYPE_INT_ARGB);
+        g.fillRect(0, 0, 1600, 500);
+        BufferedImage image2 = new BufferedImage(1600, 500, BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D g2 = image2.createGraphics();
         g2.setPaint(new LinearGradientPaint(0, 0, 0, image2.getHeight(), new float[] { 0f, 0.5f, 1f }, new Color[] { new Color(0f, 0f, 0f, 1f), new Color(0f, 0f, 0f, 0f), new Color(1f, 1f, 1f, 1f) }));
-        g2.fillRect(0, 0, 1500, 500);
+        g2.fillRect(0, 0, 1600, 500);
         g2.dispose();
         g.drawImage(image2, 0, 0, null);
         String[] strs = new String[]{"grasscolor", "skycolor", "foliagecolor", "watercolor", "fogcolor", "waterfogcolor"};
@@ -44,10 +43,10 @@ public class Palette {
         for (int i = 0; i < strs.length; i++) {
             String type = strs[i];
             List<BaseComponent[]> components = new ArrayList<>();
-            components.add(new ComponentBuilder(String.format(Strings.PLATE, strs2[i])).create());
+            components.add(new ComponentBuilder(ChatTools.formatTitle(strs2[i])).create());
             for (int j = 1; j < 14; j++) {
                 ComponentBuilder message = new ComponentBuilder();
-                for (int f = 0; f < 144; f++) {
+                for (int f = 0; f < 160; f++) {
                     Color c = new Color(Palette.image.getRGB(f * 10, j * 33));
                     ChatColor cc = ChatColor.of(c);
                     ComponentBuilder part = new ComponentBuilder("|")
@@ -60,7 +59,6 @@ public class Palette {
             }
             cache.put(type, components);
         }
-        init = true;
     }
     public static void send(Player player, String type) {
         cache.get(type).forEach(player.spigot()::sendMessage);

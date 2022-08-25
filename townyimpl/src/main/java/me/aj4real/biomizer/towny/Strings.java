@@ -24,5 +24,4 @@ public class Strings {
     public static String PARTICLE_NO_PERMISSION = COLOR_FAIL + "You do not have permission to apply particles to towns.";
     public static String VALUE_ABOVE_255 = COLOR_FAIL + "Value cannot be above 255.";
     public static String VALUE_BELOW_0 = COLOR_FAIL + "Value cannot be below 0.";
-    public static String PLATE = "§6.oOo.____________.[ §e%s§6 ].____________.oOo.";
 }

@@ -50,7 +50,7 @@ public class TownyImpl extends JavaPlugin implements Listener {
             CustomBiome biome = biomes.get(town);
             return biome != null ? biome.getName() : null;
         });
-        Palette.init();
+        new Palette();
         Bukkit.getPluginManager().registerEvents(this, this);
         BiomeCommand c = new BiomeCommand(this);
         AddonCommand cmd = new AddonCommand(TownyCommandAddonAPI.CommandType.TOWN, "biome", c);
@@ -84,7 +84,7 @@ public class TownyImpl extends JavaPlugin implements Listener {
     public void process(Town town) {
         try {
             NamespacedKey key = NamespacedKey.fromString("towny:" + town.getName().toLowerCase().replace(" ", "_"));
-            CustomBiome biome = new CustomBiome(key, Biome.PLAINS);
+            CustomBiome biome = new CustomBiome(key, Biome.FOREST);
             biomizer.getKnowItAll().newBiome(key, biome);
             biomes.put(town, biome);
             if(!starting)
@@ -136,9 +136,9 @@ public class TownyImpl extends JavaPlugin implements Listener {
         }
         if(town.hasMeta("biome.precipitation")) {
             StringDataField v = (StringDataField) town.getMetadata("biome.precipitation");
-            biome.setPrecipitation(v.getValue().toLowerCase());
+            biome.setPrecipitation(v.getValue());
         } else {
-            biome.setPrecipitation("NONE");
+            biome.setPrecipitation("none");
         }
         if (town.hasMeta("biome.particle")) {
             StringDataField v = (StringDataField) town.getMetadata("biome.particle");

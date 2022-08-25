@@ -10,6 +10,7 @@ import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.metadata.IntegerDataField;
 import com.palmergames.bukkit.towny.object.metadata.StringDataField;
+import com.palmergames.bukkit.util.ChatTools;
 import me.aj4real.biomizer.Biomizer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.*;
@@ -36,7 +37,7 @@ public class BiomeCommand implements CommandExecutor, TabCompleter {
     private static final List<String> precip;
     private static final BiPredicate<Integer, CommandSender> check;
     static {
-        ComponentBuilder cb = new ComponentBuilder(String.format(Strings.PLATE, "Biome"))
+        ComponentBuilder cb = new ComponentBuilder(ChatTools.formatTitle("Biome"))
                 .append("\n  ");
         cb.append(new ComponentBuilder("[X]")
                 .color(ChatColor.RED)
@@ -104,7 +105,7 @@ public class BiomeCommand implements CommandExecutor, TabCompleter {
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Click to change natural precipitation type.")))
                 .create());
         menu = cb.create();
-        ComponentBuilder cb2 = new ComponentBuilder(String.format(Strings.PLATE, "Precipitation"))
+        ComponentBuilder cb2 = new ComponentBuilder(ChatTools.formatTitle("Precipitation"))
                 .append("\n                 ");
         cb2.append(new ComponentBuilder("[None]")
                 .color(ChatColor.GREEN)
@@ -135,7 +136,7 @@ public class BiomeCommand implements CommandExecutor, TabCompleter {
         options = Collections.unmodifiableList(
                 Arrays.asList("grasscolor", "skycolor", "foliagecolor", "watercolor",
                         "fogcolor", "waterfogcolor", "precipitation", "particle"));
-        precip = Collections.unmodifiableList(Arrays.asList("SNOW", "RAIN", "NONE"));
+        precip = Collections.unmodifiableList(Arrays.asList("snow", "rain", "none"));
     }
     private final TownyImpl impl;
     public BiomeCommand(TownyImpl impl) {
@@ -191,11 +192,12 @@ public class BiomeCommand implements CommandExecutor, TabCompleter {
                         sender.spigot().sendMessage(precipMenu);
                         return true;
                     } else {
-                        if(!precip.contains(args[1].toUpperCase())) {
+                        String type = args[1].toLowerCase();
+                        if(!precip.contains(type)) {
                             sender.sendMessage(Strings.NOT_A_VALID_PRECIPITATION);
                             return true;
                         }
-                        t.addMetaData(new StringDataField("biome." + args[0], args[1].toLowerCase()));
+                        t.addMetaData(new StringDataField("biome." + args[0], type));
                         impl.update(t);
                         sender.sendMessage(Strings.SUCCESS);
                     }
