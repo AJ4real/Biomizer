@@ -50,7 +50,7 @@ public class TownyImpl extends JavaPlugin implements Listener {
             CustomBiome biome = biomes.get(town);
             return biome != null ? biome.getName() : null;
         });
-        new Palette();
+        new Palette(); // static init
         Bukkit.getPluginManager().registerEvents(this, this);
         BiomeCommand c = new BiomeCommand(this);
         AddonCommand cmd = new AddonCommand(TownyCommandAddonAPI.CommandType.TOWN, "biome", c);

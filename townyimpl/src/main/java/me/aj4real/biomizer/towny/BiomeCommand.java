@@ -24,13 +24,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 public class BiomeCommand implements CommandExecutor, TabCompleter {
+    private static final Map<String, BaseComponent[]> particleComponents2 = new LinkedHashMap<>();
     private static final BaseComponent[] menu;
     private static final BaseComponent[] precipMenu;
     private static final List<String> options;
@@ -99,6 +98,16 @@ public class BiomeCommand implements CommandExecutor, TabCompleter {
                 .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/town biome waterfogcolor"))
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Click to change water fog color.")))
                 .create()).append("\n  ");
+        cb.append(new ComponentBuilder("[X]")
+                .color(ChatColor.RED)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/town biome particle none"))
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Click to reset ambient particle effect.")))
+                .create()).append(" ");
+        cb.append(new ComponentBuilder("[Particle]")
+                .color(ChatColor.GREEN)
+                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/town biome particle"))
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Click to change ambient particle effect.")))
+                .create()).append("\n  ");
         cb.append(new ComponentBuilder("[Precipitation]")
                 .color(ChatColor.GREEN)
                 .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/town biome precipitation"))
@@ -133,6 +142,14 @@ public class BiomeCommand implements CommandExecutor, TabCompleter {
             }
             return false;
         };
+        Biomizer.INSTANCE.getNMS().getParticleTypes().stream().map(NamespacedKey::getKey).sorted(String::compareToIgnoreCase).forEach((s) -> {
+
+            particleComponents2.put(s, new ComponentBuilder("[" + s.substring(0, 1).toUpperCase() + s.substring(1) + "]")
+                    .color(ChatColor.GREEN)
+                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Click to change your towns ambient particle effect.")))
+                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/town biome particle " + s))
+                    .append(" ").create());
+        });
         options = Collections.unmodifiableList(
                 Arrays.asList("grasscolor", "skycolor", "foliagecolor", "watercolor",
                         "fogcolor", "waterfogcolor", "precipitation", "particle"));
@@ -147,7 +164,7 @@ public class BiomeCommand implements CommandExecutor, TabCompleter {
         try {
             Resident res = TownyAPI.getInstance().getResident((Player) sender);
             Town t = res.getTown();
-            if(!res.hasPermissionNode("towny.biome")) {
+            if(!res.hasPermissionNode("towny.command.biome")) {
                 sender.sendMessage(Strings.NO_PERMISSION);
                 return true;
             }
@@ -155,24 +172,23 @@ public class BiomeCommand implements CommandExecutor, TabCompleter {
                 sender.spigot().sendMessage(menu);
                 return true;
             }
-            if(!options.contains(args[0].toLowerCase())) {
+            String arg0 = args[0].toLowerCase();
+            if(!options.contains(arg0)) {
                 return true;
             }
-            switch(args[0].toLowerCase()) {
-                case "grasscolor": {}
-                case "skycolor": {}
-                case "foliagecolor": {}
-                case "watercolor": {}
-                case "fogcolor": {}
+            switch(arg0) {
+                case "grasscolor":
+                case "skycolor":
+                case "foliagecolor":
+                case "watercolor":
+                case "fogcolor":
                 case "waterfogcolor": {
                     if(args.length == 1) {
-                        Palette.send((Player) sender, args[0]);
+                        Palette.send((Player) sender, arg0);
                         return true;
                     } else {
                         if(args[1].equalsIgnoreCase("none")) {
-                            t.removeMetaData(new IntegerDataField("biome." + args[0]));
-                            impl.update(t);
-                            sender.sendMessage(Strings.SUCCESS);
+                            t.removeMetaData(new IntegerDataField("biome." + arg0));
                         } else {
                             int r = Integer.parseInt(args[1]);
                             int g = Integer.parseInt(args[2]);
@@ -180,10 +196,10 @@ public class BiomeCommand implements CommandExecutor, TabCompleter {
                             if(check.test(r, sender)) return true;
                             if(check.test(g, sender)) return true;
                             if(check.test(b, sender)) return true;
-                            t.addMetaData(new IntegerDataField("biome." + args[0], -16777216 | r << 16 | g << 8 | b));
-                            impl.update(t);
-                            sender.sendMessage(Strings.SUCCESS);
+                            t.addMetaData(new IntegerDataField("biome." + arg0, -16777216 | r << 16 | g << 8 | b));
                         }
+                        impl.update(t);
+                        sender.sendMessage(Strings.SUCCESS);
                     }
                     break;
                 }
@@ -197,7 +213,7 @@ public class BiomeCommand implements CommandExecutor, TabCompleter {
                             sender.sendMessage(Strings.NOT_A_VALID_PRECIPITATION);
                             return true;
                         }
-                        t.addMetaData(new StringDataField("biome." + args[0], type));
+                        t.addMetaData(new StringDataField("biome." + arg0, type));
                         impl.update(t);
                         sender.sendMessage(Strings.SUCCESS);
                     }
@@ -205,25 +221,31 @@ public class BiomeCommand implements CommandExecutor, TabCompleter {
                 }
                 case "particle": {
                     if(args.length == 1) {
-                    } else {
-                        if(!sender.hasPermission("biomizer.admin") && !sender.isOp()) {
-                            sender.sendMessage(Strings.PARTICLE_NO_PERMISSION);
-                            return true;
+                        ComponentBuilder cb2 = new ComponentBuilder(ChatTools.formatTitle("Particles")).append("\n");
+                        for (Map.Entry<String, BaseComponent[]> e : particleComponents2.entrySet()) {
+                            if(sender.hasPermission("towny.biome.particle." + e.getKey())) {
+                                cb2.append(e.getValue());
+                            }
                         }
+                        sender.spigot().sendMessage(cb2.create());
+                        return true;
+                    } else {
                         if(args[1].equalsIgnoreCase("none")) {
-                            t.removeMetaData(new StringDataField("biome." + args[0]));
-                            impl.update(t);
-                            sender.sendMessage(Strings.SUCCESS);
+                            t.removeMetaData(new StringDataField("biome." + arg0));
                         } else {
                             NamespacedKey k = NamespacedKey.minecraft(args[1].toLowerCase());
                             if(!Biomizer.INSTANCE.getNMS().getParticleTypes().contains(k)) {
                                 sender.sendMessage(Strings.NOT_A_VALID_PARTICLE);
                                 return true;
                             }
-                            t.addMetaData(new StringDataField("biome." + args[0], k.toString()));
-                            impl.update(t);
-                            sender.sendMessage(Strings.SUCCESS);
+                            if(!sender.hasPermission("towny.biome.particle." + k.getKey())) {
+                                sender.sendMessage(Strings.PARTICLE_NO_PERMISSION);
+                                return true;
+                            }
+                            t.addMetaData(new StringDataField("biome." + arg0, k.toString()));
                         }
+                        impl.update(t);
+                        sender.sendMessage(Strings.SUCCESS);
                     }
                     break;
                 }
@@ -247,7 +269,7 @@ public class BiomeCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        if(!sender.hasPermission("biomizer.admin") && !sender.isOp()) return null;
+        if(!sender.hasPermission("towny.biome.admin") && !sender.isOp()) return null;
         if(args.length == 1)
             return options;
         else {

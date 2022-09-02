@@ -91,6 +91,7 @@ public class NMSImpl implements NMS {
         Biomizer.INSTANCE.getKnowItAll().getCustomBiomes().forEach(editor::addBiome);
         c.waitForPlayer((pl) -> Biomizer.INSTANCE.getKnowItAll().add((Player) pl, editor.getBiomes()
                 .stream()
+                .filter((b) -> b.isMod())
                 .filter((b) -> Biomizer.INSTANCE.getKnowItAll().getCustomBiome(b.getName()) != null)
                 .map(me.aj4real.dataplus.api.login.Biome::getName)
                 .collect(Collectors.toSet())));
