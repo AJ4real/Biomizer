@@ -143,7 +143,6 @@ public class BiomeCommand implements CommandExecutor, TabCompleter {
             return false;
         };
         Biomizer.INSTANCE.getNMS().getParticleTypes().stream().map(NamespacedKey::getKey).sorted(String::compareToIgnoreCase).forEach((s) -> {
-
             particleComponents2.put(s, new ComponentBuilder("[" + s.substring(0, 1).toUpperCase() + s.substring(1) + "]")
                     .color(ChatColor.GREEN)
                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Click to change your towns ambient particle effect.")))
@@ -152,7 +151,7 @@ public class BiomeCommand implements CommandExecutor, TabCompleter {
         });
         options = Collections.unmodifiableList(
                 Arrays.asList("grasscolor", "skycolor", "foliagecolor", "watercolor",
-                        "fogcolor", "waterfogcolor", "precipitation", "particle"));
+                        "fogcolor", "waterfogcolor", "precipitation", "particle", "reload"));
         precip = Collections.unmodifiableList(Arrays.asList("snow", "rain", "none"));
     }
     private final TownyImpl impl;
@@ -177,6 +176,15 @@ public class BiomeCommand implements CommandExecutor, TabCompleter {
                 return true;
             }
             switch(arg0) {
+                case "reload": {
+                    if(sender.hasPermission("towny.biome.admin")) {
+                        TownyAPI.getInstance().getTowns().forEach((town) -> impl.process(town, false));
+                        sender.sendMessage(Strings.SUCCESS);
+                    } else {
+                        sender.sendMessage(Strings.NO_PERMISSION);
+                    }
+                    return true;
+                }
                 case "grasscolor":
                 case "skycolor":
                 case "foliagecolor":
@@ -210,7 +218,7 @@ public class BiomeCommand implements CommandExecutor, TabCompleter {
                     } else {
                         String type = args[1].toLowerCase();
                         if(!precip.contains(type)) {
-                            sender.sendMessage(Strings.NOT_A_VALID_PRECIPITATION);
+                            sender.sendMessage(Strings.NOT_A_VALID_OPTION);
                             return true;
                         }
                         t.addMetaData(new StringDataField("biome." + arg0, type));

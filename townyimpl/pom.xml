@@ -37,12 +37,6 @@
             <version>0.98.3.6</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>4.1.68.Final</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -110,9 +104,4 @@
             </plugin>
         </plugins>
     </build>
-    <properties>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
-    </properties>
-
 </project>

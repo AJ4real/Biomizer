@@ -20,12 +20,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>4.1.68.Final</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>me.aj4real.simplepackets</groupId>
             <artifactId>dist</artifactId>
             <version>1.0-SNAPSHOT</version>

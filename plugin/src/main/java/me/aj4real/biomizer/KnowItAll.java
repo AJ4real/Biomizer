@@ -29,7 +29,7 @@ import java.util.function.Function;
 
 public class KnowItAll implements Listener {
     public static final NamespacedKey storage = NamespacedKey.fromString("me.aj4real.biomizer:biome");
-    private static Function<Chunk, NamespacedKey> provider = (c) -> {
+    private static BiFunction<Player, Chunk, NamespacedKey> provider = (p, c) -> {
         if(c.getPersistentDataContainer().has(storage, PersistentDataType.STRING)) {
             String data = c.getPersistentDataContainer().get(storage, PersistentDataType.STRING);
             return NamespacedKey.fromString(data);
@@ -46,7 +46,7 @@ public class KnowItAll implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
         reloadBiomes();
     }
-    public static void setProvider(Function<Chunk, NamespacedKey> provider) {
+    public static void setProvider(BiFunction<Player, Chunk, NamespacedKey> provider) {
         KnowItAll.provider = provider;
     }
     public void reloadBiomes() {
@@ -65,7 +65,7 @@ public class KnowItAll implements Listener {
         return null;
     }
     public Object should(Player player, Chunk chunk) {
-        NamespacedKey key = provider.apply(chunk);
+        NamespacedKey key = provider.apply(player, chunk);
         if(players.get(player).contains(key)) return biomes.get(key);
         return null;
     }

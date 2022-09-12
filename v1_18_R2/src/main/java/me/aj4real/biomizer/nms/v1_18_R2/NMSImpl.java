@@ -23,6 +23,7 @@ import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.network.protocol.game.ClientboundLoginPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.dedicated.DedicatedServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
@@ -34,6 +35,7 @@ import org.bukkit.craftbukkit.v1_18_R2.CraftChunk;
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_18_R2.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_18_R2.util.CraftNamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -58,6 +60,14 @@ public class NMSImpl implements NMS {
 
     public ClientboundLevelChunkWithLightPacket patchChunkPacket(Client c, ClientboundLevelChunkWithLightPacket p) {
         if(c.getPlayer() == null) {
+            c.waitForPlayer((pl) -> {
+                ServerLevel world = ((CraftWorld) ((Player)pl).getWorld()).getHandle();
+                ((CraftPlayer)pl).getHandle().connection.connection.send(new ClientboundLevelChunkWithLightPacket(
+                        world.getChunk(p.getX(), p.getZ()),
+                        world.getLightEngine(),
+                        null, null, true
+                ));
+            });
             return p;
         }
         Chunk chunk = c.getPlayer().getWorld().getChunkAt(p.getX(), p.getZ());
@@ -81,7 +91,7 @@ public class NMSImpl implements NMS {
         Biomizer.INSTANCE.getKnowItAll().getCustomBiomes().forEach(editor::addBiome);
         c.waitForPlayer((pl) -> Biomizer.INSTANCE.getKnowItAll().add((Player) pl, editor.getBiomes()
                 .stream()
-                .filter((b) -> b.isMod())
+                .filter(me.aj4real.dataplus.api.login.Biome::isMod)
                 .filter((b) -> Biomizer.INSTANCE.getKnowItAll().getCustomBiome(b.getName()) != null)
                 .map(me.aj4real.dataplus.api.login.Biome::getName)
                 .collect(Collectors.toSet())));

@@ -69,7 +69,6 @@ public class NMSImpl implements NMS {
             });
             return p;
         }
-
         Chunk chunk = c.getPlayer().getWorld().getChunkAt(p.getX(), p.getZ());
         Biome biome = (Biome) Biomizer.INSTANCE.getKnowItAll().should(c.getPlayer(), chunk);
         if(biome == null) return p;
@@ -91,8 +90,8 @@ public class NMSImpl implements NMS {
         Biomizer.INSTANCE.getKnowItAll().getCustomBiomes().forEach(editor::addBiome);
         c.waitForPlayer((pl) -> Biomizer.INSTANCE.getKnowItAll().add((Player) pl, editor.getBiomes()
                 .stream()
-                .filter((b) -> b.isMod())
                 .filter((b) -> Biomizer.INSTANCE.getKnowItAll().getCustomBiome(b.getName()) != null)
+                .filter(me.aj4real.dataplus.api.login.Biome::isMod)
                 .map(me.aj4real.dataplus.api.login.Biome::getName)
                 .collect(Collectors.toSet())));
         nbt = editor.build();

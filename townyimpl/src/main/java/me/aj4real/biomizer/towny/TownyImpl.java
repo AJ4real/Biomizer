@@ -9,6 +9,7 @@ import com.palmergames.bukkit.towny.TownyCommandAddonAPI;
 import com.palmergames.bukkit.towny.event.NewTownEvent;
 import com.palmergames.bukkit.towny.event.RenameTownEvent;
 import com.palmergames.bukkit.towny.event.TownClaimEvent;
+import com.palmergames.bukkit.towny.event.town.TownRuinedEvent;
 import com.palmergames.bukkit.towny.event.town.TownUnclaimEvent;
 import com.palmergames.bukkit.towny.object.AddonCommand;
 import com.palmergames.bukkit.towny.object.Town;
@@ -32,20 +33,23 @@ import java.util.Map;
 import java.util.logging.Level;
 
 public class TownyImpl extends JavaPlugin implements Listener {
+    Configuration configuration = null;
     Dist dist = null;
     Biomizer biomizer = null;
-    private boolean starting = true;
     public static final Map<Town, CustomBiome> biomes = new HashMap<>();
     private AddonCommand cmd = null;
     public void onLoad() {
         dist = new Dist();
         dist.onLoad(this);
         biomizer = dist.getBiomizer();
+        configuration = new Configuration(this);
     }
     public void onEnable() {
         dist.onEnable(this);
-        TownyAPI.getInstance().getTowns().forEach(this::process);
-        KnowItAll.setProvider((c) -> {
+        TownyAPI.getInstance().getTowns().forEach((t) -> {
+            process(t, false);
+        });
+        KnowItAll.setProvider((p,c) -> {
             Town town = TownyAPI.getInstance().getTown(c.getBlock(0, 0, 0).getLocation());
             CustomBiome biome = biomes.get(town);
             return biome != null ? biome.getName() : null;
@@ -56,7 +60,6 @@ public class TownyImpl extends JavaPlugin implements Listener {
         AddonCommand cmd = new AddonCommand(TownyCommandAddonAPI.CommandType.TOWN, "biome", c);
         cmd.setTabCompleter(c);
         TownyCommandAddonAPI.addSubCommand(cmd);
-        starting = false;
     }
     public void onDisable() {
         dist.onDisable(this);
@@ -81,13 +84,21 @@ public class TownyImpl extends JavaPlugin implements Listener {
         Chunk c = e.getTownBlock().getWorldCoord().getBukkitWorld().getChunkAt(e.getTownBlock().getX(), e.getTownBlock().getZ());
         biomizer.getNMS().sendChunkUpdate(c);
     }
+    @EventHandler
+    public void e(TownRuinedEvent e) {
+        biomizer.getKnowItAll().removeBiome(biomes.get(e.getTown()));
+    }
     public void process(Town town) {
+        process(town, true);
+    }
+    public void process(Town town, boolean update) {
         try {
             NamespacedKey key = NamespacedKey.fromString("towny:" + town.getName().toLowerCase().replace(" ", "_"));
+            if(key == null) throw new IllegalArgumentException();
             CustomBiome biome = new CustomBiome(key, Biome.FOREST);
             biomizer.getKnowItAll().newBiome(key, biome);
             biomes.put(town, biome);
-            if(!starting)
+            if(update)
                 town.getTownBlocks().forEach((tb) -> {
                     biomizer.getNMS().sendChunkUpdate(tb.getWorldCoord().getBukkitWorld().getChunkAt(tb.getX(), tb.getZ()));
                 });
@@ -151,5 +162,6 @@ public class TownyImpl extends JavaPlugin implements Listener {
         } else {
             biome.setParticle(null);
         }
+        biome.isMod();
     }
 }

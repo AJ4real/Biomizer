@@ -28,7 +28,7 @@ public class Biomizer {
         this.nms = nms;
         this.nms.onEnable(plugin);
         this.dataplus = me.aj4real.dataplus.Dist.init(plugin);
-        this.packets = me.aj4real.simplepackets.Dist.init(plugin, "biomizer");
+        this.packets = me.aj4real.simplepackets.Dist.init(plugin);
         this.knowItAll = new KnowItAll();
         this.knowItAll.onEnable(plugin);
     }
