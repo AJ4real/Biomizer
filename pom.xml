@@ -23,6 +23,7 @@
         <module>dist</module>
         <module>denizenimpl</module>
         <module>townyimpl</module>
+        <module>standalone</module>
     </modules>
 
     <build>
