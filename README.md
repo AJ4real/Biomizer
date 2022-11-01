@@ -1,1 +1,7 @@
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+TODO: Make README better
+
+![alt text](https://github.com/AJ4real/Biomizer/blob/main/img/1.png?raw=true)
+
+![alt text](https://github.com/AJ4real/Biomizer/blob/main/img/2.png?raw=true)
+
+![alt text](https://github.com/AJ4real/Biomizer/blob/main/img/3.png?raw=true)
