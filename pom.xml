@@ -15,15 +15,17 @@
     </properties>
 
     <modules>
-        <module>v1_18_R1</module>
-        <module>v1_18_R2</module>
-        <module>v1_19_R1</module>
+        <module>v1_18</module>
+        <module>v1_18_1</module>
+        <module>v1_18_2</module>
+        <module>v1_19</module>
+        <module>v1_19_1</module>
+        <module>v1_19_2</module>
         <module>plugin</module>
         <module>paper</module>
         <module>dist</module>
         <module>denizenimpl</module>
         <module>townyimpl</module>
-        <module>standalone</module>
     </modules>
 
     <build>

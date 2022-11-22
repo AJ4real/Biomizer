@@ -200,7 +200,7 @@ public class CommandBiome extends AbstractCommand {
         } else if(action == Action.REMOVE) {
             Biomizer.INSTANCE.getKnowItAll().removeBiome(Biomizer.INSTANCE.getKnowItAll().getCustomBiome(key));
         } else if(action == Action.DUMP) {
-
+            //TODO
         }
         e.setFinished(true);
     }
