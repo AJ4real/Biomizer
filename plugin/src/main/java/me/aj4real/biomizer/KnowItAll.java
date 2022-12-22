@@ -6,10 +6,7 @@ package me.aj4real.biomizer;
 
 import me.aj4real.biomizer.api.CustomBiome;
 import me.aj4real.dataplus.api.login.Biome;
-import me.aj4real.dataplus.api.login.Dimension;
 import me.aj4real.dataplus.api.login.LoginPacketEditor;
-import me.aj4real.dataplus.api.nbt.NBTCompoundTag;
-import me.aj4real.dataplus.api.nbt.NBTTag;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.NamespacedKey;
@@ -25,7 +22,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public class KnowItAll implements Listener {
     public static final NamespacedKey storage = NamespacedKey.fromString("me.aj4real.biomizer:biome");
