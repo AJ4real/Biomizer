@@ -7,11 +7,9 @@ package me.aj4real.biomizer;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class Dist {
     private final Biomizer main = new Biomizer();
@@ -49,7 +47,8 @@ public class Dist {
         v1_18_2(me.aj4real.biomizer.nms.v1_18_2.NMSImpl.class),
         v1_19(me.aj4real.biomizer.nms.v1_19.NMSImpl.class),
         v1_19_1(me.aj4real.biomizer.nms.v1_19_1.NMSImpl.class),
-        v1_19_2(me.aj4real.biomizer.nms.v1_19_2.NMSImpl.class);
+        v1_19_2(me.aj4real.biomizer.nms.v1_19_2.NMSImpl.class),
+        v1_19_3(me.aj4real.biomizer.nms.v1_19_3.NMSImpl.class);
         private final Class<? extends NMS> nms;
         Version(Class<? extends NMS> nms) {
             this.nms = nms;
