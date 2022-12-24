@@ -173,10 +173,10 @@ public class CommandBiome extends AbstractCommand {
                 biome.setDownfall(e.getElement("downfall").asDouble());
             }
             if (e.hasObject("ambient_sound")) {
-                biome.setSound(((NamespacedKey)e.getObject("ambient_sound")).toString());
+                biome.setAmbientSound(((NamespacedKey)e.getObject("ambient_sound")).toString());
             }
             if (e.hasObject("sound")) {
-                biome.setSound(((NamespacedKey)e.getObject("sound")).toString());
+                biome.setAmbientSound(((NamespacedKey)e.getObject("sound")).toString());
             }
             if (e.hasObject("grass_color_modifier")) {
                 biome.setGrassColorModifier(e.getElement("grass_color_modifier").asString());

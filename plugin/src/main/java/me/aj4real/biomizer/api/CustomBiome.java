@@ -27,7 +27,7 @@ public class CustomBiome extends Biome {
         this.setTemperatureModifier(extended.getTemperatureModifier().orElse(null));
         this.setParticle(extended.getParticle().orElse(null));
         this.setGrassColorModifier(extended.getGrassColorModifier().orElse(null));
-        this.setSound(extended.getSound().orElse(null));
+        this.setAmbientSound(extended.getSound().orElse(null));
         if(extended.getTickDelay().isPresent())
             this.setTickDelay(extended.getTickDelay().get());
         if(extended.getOffset().isPresent())
