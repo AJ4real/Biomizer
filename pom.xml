@@ -27,6 +27,7 @@
         <module>dist</module>
         <module>denizenimpl</module>
         <module>townyimpl</module>
+        <module>v1_19_4</module>
     </modules>
 
     <build>

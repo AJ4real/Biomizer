@@ -4,6 +4,7 @@
 
 package me.aj4real.biomizer;
 
+import me.aj4real.biomizer.nms.v1_19_4.NMSImpl;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
@@ -52,7 +53,8 @@ public class Dist {
         v1_19(me.aj4real.biomizer.nms.v1_19.NMSImpl.class),
         v1_19_1(me.aj4real.biomizer.nms.v1_19_1.NMSImpl.class),
         v1_19_2(me.aj4real.biomizer.nms.v1_19_2.NMSImpl.class),
-        v1_19_3(me.aj4real.biomizer.nms.v1_19_3.NMSImpl.class);
+        v1_19_3(NMSImpl.class),
+        v1_19_4(me.aj4real.biomizer.nms.v1_19_4.NMSImpl.class);
         private final Class<? extends NMS> nms;
         private final int major, minor, micro;
         Version(Class<? extends NMS> nms) {
